@@ -17,6 +17,7 @@ module Lita
       config :rooms, required: false, type: Array
       config :use_ssl, required: false, types: [TrueClass, FalseClass], default: true
       config :points_field, required: false, type: String
+      config :transition_map, required: true, type: Hash
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -77,6 +78,13 @@ module Lita
         }
       )
 
+      route(
+          /^jira\stransition\s#{ISSUE_PATTERN}\sto\s#{TRANSITION_PATTERN}$/,
+          :transition,
+          command: true,
+          help: {'help.transition.syntax' => t('help.transition.desc') }
+      )
+
       # Detect ambient JIRA issues in non-command messages
       route AMBIENT_PATTERN, :ambient, command: false
 
@@ -130,6 +138,22 @@ module Lita
         return response.reply(t('myissues.empty')) if issues.empty?
 
         response.reply(format_issues(issues))
+      end
+
+      def transition(response)
+        issue = fetch_issue(response.match_data['issue'])
+        return response.reply(t('error.request')) unless issue
+        begin
+          issue_transition = issue.transitions.build
+          issue_transition.save!(transition: { id: config.transition_map[response.match_data['transition'].downcase]})
+        rescue => e
+          response.reply(t('error.request'))
+          return
+        end
+
+        issue = fetch_issue(response.match_data['issue'])
+
+        response.reply(t('transition.new_status', issue: issue.key, status: issue.status.name))
       end
 
       def ambient(response)

@@ -52,3 +52,7 @@ en:
         myissues:
           empty: "You do not have any assigned issues. Great job!"
           info: "Here are issues currently assigned to you:"
+        transition:
+          syntax: jira transition <issue> to "<status>"
+          desc: Transitions a JIRA issue to the specified status (e.g. In Progress)
+          new_status: "Issue %{issue} is now in the %{status} status"

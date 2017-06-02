@@ -10,5 +10,6 @@ module JiraHelper
     EMAIL_PATTERN   = /(?<email>[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+)/i
     AMBIENT_PATTERN = /(\s|^)#{ISSUE_PATTERN}/
     POINTS_PATTERN  = /(?<points>\d{1,2})/
+    TRANSITION_PATTERN = /\"(?<transition>.+?)\"/
   end
 end
